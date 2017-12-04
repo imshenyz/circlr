@@ -10,6 +10,7 @@ function Rotation(el) {
   this.el = el;
   this.current = 0;
   this.cycle(true);
+  this.swing(false);
   this.interval(75);
   this.start(0);
   this.onTouchStart = this.onTouchStart.bind(this);
@@ -46,6 +47,11 @@ Rotation.prototype.reverse = function (n) {
 
 Rotation.prototype.cycle = function (n) {
   this._cycle = n;
+  return this;
+};
+
+Rotation.prototype.swing = function (n) {
+  this._swing = n;
   return this;
 };
 
@@ -99,10 +105,10 @@ Rotation.prototype.next = function () {
 Rotation.prototype.show = function (n) {
   var children = this.children();
   var len = children.length;
-  if (n < 0) n = this._cycle ? n + len : 0;
-  if (n > len - 1) n = this._cycle ? n - len : len - 1;
-  children[this.current].style.display = 'none';
-  children[n].style.display = 'block';
+  if (n < (this._swing ? -len + 1 : 0)) n = this._cycle ? n + len : 0;
+  if (n > len - 1) n = this._cycle ? (this._swing ? -len + 1 : n - len) : len - 1;
+  children[Math.abs(this.current)].style.display = 'none';
+  children[Math.abs(n)].style.display = 'block';
   if (n !== this.current) this.emit('show', n, len);
   this.current = n;
   return this;
